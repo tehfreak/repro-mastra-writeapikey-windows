@@ -6,7 +6,10 @@ credential, exit code 0, no warning.
 
 ## Status
 
-Not reported upstream yet.
+Reported upstream, fix approved and waiting to merge:
+
+- Issue: https://github.com/mastra-ai/mastra/issues/19736
+- PR: https://github.com/mastra-ai/mastra/pull/19738 (open, approved)
 
 Same root cause as
 [repro-mastra-clone-template-windows](https://github.com/tehfreak/repro-mastra-clone-template-windows)
