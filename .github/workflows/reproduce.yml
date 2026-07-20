@@ -1,0 +1,57 @@
+name: reproduce
+
+# The key should come out corrupted on Windows and intact on Linux. This job is
+# green while that holds and red once it doesn't.
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  reproduce:
+    name: ${{ matrix.os }} expects ${{ matrix.expect }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            expect: CORRUPTED
+          - os: ubuntu-latest
+            expect: CLEAN
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm install
+
+      - run: npm run typecheck
+
+      - name: check the verdict
+        shell: bash
+        run: |
+          set +e
+          out="$(node repro.ts 2>&1)"
+          echo "$out"
+
+          verdict="$(echo "$out" | grep -oE 'VERDICT: (CORRUPTED|CLEAN)' | tail -1)"
+          echo "got: $verdict"
+          echo "expected: VERDICT: ${{ matrix.expect }}"
+
+          if [ -z "$verdict" ]; then
+            echo "no verdict line, the script probably crashed"
+            exit 1
+          fi
+
+          if [ "$verdict" = "VERDICT: ${{ matrix.expect }}" ]; then
+            exit 0
+          fi
+
+          echo "verdict changed, so the bug or the platform behaviour moved"
+          exit 1

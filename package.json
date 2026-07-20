@@ -1,0 +1,20 @@
+{
+  "name": "repro-mastra-writeapikey-windows",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "repro": "node repro.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "execa": "9.6.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.1",
+    "typescript": "5.9.3"
+  }
+}
