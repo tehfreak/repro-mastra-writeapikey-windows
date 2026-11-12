@@ -33,7 +33,7 @@ async function scaffold(label: string, key: string): Promise<{ raw: string; valu
     'npx',
     [
       '--yes',
-      'create-mastra@latest',
+      'create-mastra@1.19.0',
       'myapp',
       '--llm',
       'openai',

@@ -6,10 +6,14 @@ credential, exit code 0, no warning.
 
 ## Status
 
-Reported upstream, fix approved and waiting to merge:
+Fixed upstream in `create-mastra@1.20.0`. https://github.com/mastra-ai/mastra/issues/19736 was
+closed by https://github.com/mastra-ai/mastra/pull/19825, a larger CLI refactor that took over the
+change from https://github.com/mastra-ai/mastra/pull/19738, which was closed. From 1.20.0 the key is
+written with `fs.appendFile`, without a shell. Checked on Windows on 2026-11-12:
+`create-mastra@1.38.0` writes all three keys below intact.
 
-- Issue: https://github.com/mastra-ai/mastra/issues/19736
-- PR: https://github.com/mastra-ai/mastra/pull/19738 (open, approved)
+The repro is pinned to `create-mastra@1.19.0`, the last version with the bug. The command below no
+longer runs from 1.20.0 on, since `-c`, `--no-example` and `--dir` are gone from the CLI.
 
 Same root cause as
 [repro-mastra-clone-template-windows](https://github.com/tehfreak/repro-mastra-clone-template-windows)
@@ -19,7 +23,7 @@ tracked on its own.
 ## What happens
 
 ```
-npx create-mastra@latest myapp --llm openai --llm-api-key "AIzaSyBx9K2mQ==" -c agents,tools --no-example --dir src/
+npx create-mastra@1.19.0 myapp --llm openai --llm-api-key "AIzaSyBx9K2mQ==" -c agents,tools --no-example --dir src/
 ```
 
 ```
@@ -42,8 +46,7 @@ Read the raw bytes rather than `type` or `cat`, which hide the trailing space:
 ```
 
 Don't add `--default` when reproducing. That flag drops `--llm-api-key` entirely and writes
-`.env.example` instead, which hides this bug. Separate defect, tracked in
-[repro-mastra-default-flags-ignored](https://github.com/tehfreak/repro-mastra-default-flags-ignored).
+`.env.example` instead, which hides this bug. That is a separate defect.
 
 Checked with `create-mastra@1.19.0`.
 
@@ -56,7 +59,7 @@ npm install
 npm run repro
 ```
 
-`repro.ts` drives the published `create-mastra`, one scaffold per key shape, then reads each
+`repro.ts` drives the published `create-mastra@1.19.0`, one scaffold per key shape, then reads each
 generated `.env` back as raw bytes. It prints `VERDICT: CORRUPTED` or `VERDICT: CLEAN`. Three
 scaffolds take a couple of minutes, since each one installs its own dependencies.
 
